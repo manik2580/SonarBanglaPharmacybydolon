@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sonar Bangla Pharmacy</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="header" role="banner">
+        <div class="header-left">
+            <div class="logo">
+                <i class="fas fa-store" aria-hidden="true"></i>
+                <span>Sonar Bangla Pharmacy</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <button id="darkModeToggle" class="dark-mode-toggle" title="Toggle Dark Mode">
+                <i class="fas fa-moon"></i>
+            </button>
+            <div class="datetime">
+                <span id="currentDateTime"></span>
+            </div>
+            <div class="user-info">
+                <i class="fas fa-user-circle" aria-hidden="true"></i>
+                <span>Md. Dolon Mondol</span>
+            </div>
+            <button id="logoutBtn" class="btn btn-secondary btn-sm" title="Logout">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <nav class="sidebar" role="navigation">
+            <ul class="nav-menu">
+                <li class="nav-item active" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt" aria-hidden="true"></i>
+                    <span>Dashboard</span>
+                </li>
+                <li class="nav-item" data-section="sales">
+                    <i class="fas fa-cash-register"></i>
+                    <span>Sales (POS)</span>
+                </li>
+                <li class="nav-item" data-section="procurement">
+                    <i class="fas fa-truck"></i>
+                    <span>Procurement</span>
+                </li>
+                <li class="nav-item" data-section="inventory">
+                    <i class="fas fa-boxes"></i>
+                    <span>Inventory</span>
+                </li>
+                <li class="nav-item" data-section="statements">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Statements</span>
+                </li>
+                <li class="nav-item" data-section="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </li>
+            </ul>
+        </nav>
+
+        <main class="content" role="main">
+            <section id="dashboard" class="section active">
+                <div class="section-header">
+                    <h1>Dashboard</h1>
+                    <p>Overview of your shop's performance</p>
+                </div>
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-dollar-sign" aria-hidden="true"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Today's Sales</h3>
+                            <p class="card-value" id="todaySales">0.00</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Total Transactions</h3>
+                            <p class="card-value" id="totalTransactions">0</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Today's Profit</h3>
+                            <p class="card-value" id="todayProfit">0.00</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Low Stock Items</h3>
+                            <p class="card-value" id="lowStockCount">0</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section-header" style="margin-top: 3rem;">
+                    <h2>Current Month Reports</h2>
+                    <p>Overview of this month's performance</p>
+                </div>
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Monthly Sales</h3>
+                            <p class="card-value" id="monthlySales">0.00</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Monthly Profit</h3>
+                            <p class="card-value" id="monthlyProfit">0.00</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+                            <i class="fas fa-shopping-bag"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Monthly Purchases</h3>
+                            <p class="card-value" id="monthlyPurchases">0.00</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon" style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);">
+                            <i class="fas fa-receipt"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Monthly Transactions</h3>
+                            <p class="card-value" id="monthlyTransactions">0</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="sales" class="section">
+                <div class="section-header">
+                    <h1>Point of Sale</h1>
+                    <p>Process customer sales and generate receipts</p>
+                </div>
+                <div class="pos-container">
+                    <div class="pos-left">
+                        <div class="product-search-enhanced">
+                            <h3 class="search-title">Product Search</h3>
+                            <div class="search-methods">
+                                <div class="search-method active" data-method="name">
+                                    <i class="fas fa-tag"></i>
+                                    <span>Search by Name</span>
+                                </div>
+                                <div class="search-method" data-method="barcode">
+                                    <i class="fas fa-barcode"></i>
+                                    <span>Search by Barcode</span>
+                                </div>
+                            </div>
+                            <div class="search-input-container">
+                                <label for="productSearch" class="search-label">
+                                    <span id="searchMethodLabel">Enter Product Name:</span>
+                                </label>
+                                <input type="text" id="productSearch" class="search-input-large" placeholder="Type product name to search...">
+                                <div id="productSuggestions" class="suggestions-enhanced"></div>
+                            </div>
+                            <div class="search-tips">
+                                <p><i class="fas fa-lightbulb"></i> Tip: You can search by product name or barcode. Results will appear as you type.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="product-details-enhanced" id="productDetails" style="display: none;">
+                            <h3 class="details-title">Selected Product</h3>
+                            <div class="product-info-card">
+                                <div class="detail-row-enhanced">
+                                    <span class="detail-label">Product Name:</span>
+                                    <span class="detail-value" id="selectedProductName"></span>
+                                </div>
+                                <div class="detail-row-enhanced">
+                                    <span class="detail-label">Available Stock:</span>
+                                    <span class="detail-value stock-info" id="selectedProductStock"></span>
+                                </div>
+                                <div class="detail-row-enhanced">
+                                    <span class="detail-label">Unit Price:</span>
+                                    <span class="detail-value price-info" id="selectedProductPrice"></span>
+                                </div>
+                                <div class="quantity-section">
+                                    <label for="saleQuantity" class="quantity-label">Quantity:</label>
+                                    <div class="quantity-controls">
+                                        <button type="button" class="qty-btn" id="decreaseQty">-</button>
+                                        <input type="number" id="saleQuantity" class="quantity-input-large" min="1" value="1">
+                                        <button type="button" class="qty-btn" id="increaseQty">+</button>
+                                    </div>
+                                </div>
+                                <div class="line-total-section">
+                                    <span class="total-label">Line Total:</span>
+                                    <span class="total-amount" id="lineTotal">0.00</span>
+                                </div>
+                                <button id="addToSale" class="btn btn-primary btn-large">
+                                    <i class="fas fa-plus"></i> Add to Sale
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pos-right">
+                        <div class="sale-items">
+                            <h3>Current Sale</h3>
+                            <table id="saleItemsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Qty</th>
+                                        <th>Price</th>
+                                        <th>Total</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                            <div class="sale-total-enhanced">
+                                <h3>Final Amount: <span id="saleGrandTotal">0.00</span></h3>
+                            </div>
+                            <div class="received-amount-section">
+                                <h4>Payment Details</h4>
+                                <div class="form-group">
+                                    <label for="receivedAmount" class="received-label">Received Amount:</label>
+                                    <div class="received-input-container">
+                                        <span class="currency-symbol"></span>
+                                        <input type="number" id="receivedAmount" class="received-input" step="0.01" min="0" placeholder="Enter received amount">
+                                    </div>
+                                </div>
+                                <div class="change-display" id="changeDisplay" style="display: none;">
+                                    <div class="change-row">
+                                        <span>Total Amount:</span>
+                                        <span id="changeTotal">0.00</span>
+                                    </div>
+                                    <div class="change-row">
+                                        <span>Received:</span>
+                                        <span id="changeReceived">0.00</span>
+                                    </div>
+                                    <div class="change-row change-amount">
+                                        <span>Change:</span>
+                                        <span id="changeAmount">0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="sale-actions">
+                                <button id="completeSale" class="btn btn-success">Complete Sale</button>
+                                <button id="clearSale" class="btn btn-secondary">Clear Sale</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="procurement" class="section">
+                <div class="section-header">
+                    <h1>Procurement / Retail Purchases</h1>
+                    <p>Manage inventory purchases and stock updates</p>
+                </div>
+                <div class="procurement-container">
+                    <div class="procurement-form">
+                        <div class="product-search-enhanced">
+                            <h3 class="search-title">Product Search</h3>
+                            <div class="search-methods">
+                                <div class="search-method active" data-method="name" data-module="procurement">
+                                    <i class="fas fa-tag"></i>
+                                    <span>Search by Name</span>
+                                </div>
+                                <div class="search-method" data-method="barcode" data-module="procurement">
+                                    <i class="fas fa-barcode"></i>
+                                    <span>Search by Barcode</span>
+                                </div>
+                            </div>
+                            <div class="search-input-container">
+                                <label for="procurementSearch" class="search-label">
+                                    <span id="procurementSearchMethodLabel">Enter Product Name:</span>
+                                </label>
+                                <input type="text" id="procurementSearch" class="search-input-large" placeholder="Type product name to search...">
+                                <div id="procurementSuggestions" class="suggestions-enhanced"></div>
+                            </div>
+                            <div class="search-tips">
+                                <p><i class="fas fa-lightbulb"></i> Tip: You can search by product name or barcode. Results will appear as you type.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <button id="addNewProduct" class="btn btn-secondary btn-large">
+                                <i class="fas fa-plus"></i> Add New Product
+                            </button>
+                        </div>
+                        
+                        <div class="procurement-details-enhanced" id="procurementDetails">
+                            <h3 class="details-title">Purchase Details</h3>
+                            <div class="procurement-info-card">
+                                <div class="form-row-enhanced">
+                                    <div class="form-group-enhanced">
+                                        <label for="procQuantity" class="quantity-label">Quantity:</label>
+                                        <div class="quantity-controls">
+                                            <button type="button" class="qty-btn" id="decreaseProcQty">-</button>
+                                            <input type="number" id="procQuantity" class="quantity-input-large" min="1" value="1">
+                                            <button type="button" class="qty-btn" id="increaseProcQty">+</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group-enhanced">
+                                        <label for="procPurchasePrice" class="price-label">Purchase Price (Unit):</label>
+                                        <div class="price-input-container">
+                                            <span class="currency-symbol"></span>
+                                            <input type="number" id="procPurchasePrice" class="price-input-large" step="0.01" min="0" placeholder="0.00">
+                                        </div>
+                                    </div>
+                                    <div class="form-group-enhanced">
+                                        <label for="procSellingPrice" class="price-label">Selling Price (Unit):</label>
+                                        <div class="price-input-container">
+                                            <span class="currency-symbol"></span>
+                                            <input type="number" id="procSellingPrice" class="price-input-large" step="0.01" min="0" placeholder="0.00">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="line-total-section">
+                                    <span class="total-label">Line Total:</span>
+                                    <span class="total-amount" id="procLineTotal">0.00</span>
+                                </div>
+                                <button id="addToProcurement" class="btn btn-primary btn-large">
+                                    <i class="fas fa-plus"></i> Add to Batch
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="procurement-batch">
+                        <h3>Current Procurement Batch</h3>
+                        <table id="procurementTable">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Qty</th>
+                                    <th>Purchase Price</th>
+                                    <th>Selling Price</th>
+                                    <th>Line Total</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                        <div class="batch-total-enhanced">
+                            <h3>Final Amount: <span id="procurementBatchTotal">0.00</span></h3>
+                        </div>
+                        <div class="procurement-actions">
+                            <button id="completeProcurement" class="btn btn-success">Complete Procurement</button>
+                            <button id="clearProcurement" class="btn btn-secondary">Clear Batch</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="inventory" class="section">
+                <div class="section-header">
+                    <h1>Inventory Management</h1>
+                    <p>Monitor stock levels and product information</p>
+                </div>
+                <div class="inventory-controls">
+                    <input type="text" id="inventorySearch" placeholder="Search products...">
+                    <select id="inventoryFilter">
+                        <option value="all">All Products</option>
+                        <option value="low-stock">Low Stock</option>
+                        <option value="out-of-stock">Out of Stock</option>
+                    </select>
+                </div>
+                <div class="inventory-table-container">
+                    <table id="inventoryTable">
+                        <thead>
+                            <tr>
+                                <th>Barcode</th>
+                                <th>Product Name</th>
+                                <th>Company</th>
+                                <th>Stock Quantity</th>
+                                <th>Purchase Price</th>
+                                <th>Selling Price</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="statements" class="section">
+                <div class="section-header">
+                    <h1>Sales & Procurement Statements</h1>
+                    <p>View detailed reports and analytics</p>
+                </div>
+                <div class="statements-tabs">
+                    <button class="tab-btn active" data-tab="daily-sales">Daily Sales</button>
+                    <button class="tab-btn" data-tab="range-sales">Sales Range</button>
+                    <button class="tab-btn" data-tab="daily-procurement">Daily Procurement</button>
+                    <button class="tab-btn" data-tab="range-procurement">Procurement Range</button>
+                </div>
+                
+                <div id="daily-sales" class="tab-content active">
+                    <h3>Daily Sales Statement - <span id="dailySalesDate"></span></h3>
+                    <div class="statement-actions">
+                        <button id="printDailySales" class="btn btn-secondary">Print</button>
+                        <button id="exportDailySales" class="btn btn-secondary">Export CSV</button>
+                    </div>
+                    <table id="dailySalesTable">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Purchase Price</th>
+                                <th>Selling Price</th>
+                                <th>Profit</th>
+                                <th>Line Total</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div class="statement-totals">
+                        <div class="total-row">
+                            <span>Total Sales Amount:</span>
+                            <span id="dailySalesTotal">0.00</span>
+                        </div>
+                        <div class="total-row">
+                            <span>Total Profit:</span>
+                            <span id="dailyProfitTotal">0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="range-sales" class="tab-content">
+                    <h3>Sales Statement - Date Range</h3>
+                    <div class="date-range">
+                        <label for="salesFromDate">From:</label>
+                        <input type="date" id="salesFromDate">
+                        <label for="salesToDate">To:</label>
+                        <input type="date" id="salesToDate">
+                        <button id="generateSalesRange" class="btn btn-primary">Generate Report</button>
+                    </div>
+                    <div class="statement-actions">
+                        <button id="printRangeSales" class="btn btn-secondary">Print</button>
+                        <button id="exportRangeSales" class="btn btn-secondary">Export CSV</button>
+                    </div>
+                    <table id="rangeSalesTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Purchase Price</th>
+                                <th>Selling Price</th>
+                                <th>Profit</th>
+                                <th>Line Total</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div class="statement-totals">
+                        <div class="total-row">
+                            <span>Total Sales Amount:</span>
+                            <span id="rangeSalesTotal">0.00</span>
+                        </div>
+                        <div class="total-row">
+                            <span>Total Profit:</span>
+                            <span id="rangeProfitTotal">0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="daily-procurement" class="tab-content">
+                    <h3>Daily Procurement Statement - <span id="dailyProcurementDate"></span></h3>
+                    <div class="statement-actions">
+                        <button id="printDailyProcurement" class="btn btn-secondary">Print</button>
+                        <button id="exportDailyProcurement" class="btn btn-secondary">Export CSV</button>
+                    </div>
+                    <table id="dailyProcurementTable">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Purchase Price</th>
+                                <th>Selling Price</th>
+                                <th>Line Total</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div class="statement-totals">
+                        <div class="total-row">
+                            <span>Total Purchase Amount:</span>
+                            <span id="dailyProcurementTotal">0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="range-procurement" class="tab-content">
+                    <h3>Procurement Statement - Date Range</h3>
+                    <div class="date-range">
+                        <label for="procurementFromDate">From:</label>
+                        <input type="date" id="procurementFromDate">
+                        <label for="procurementToDate">To:</label>
+                        <input type="date" id="procurementToDate">
+                        <button id="generateProcurementRange" class="btn btn-primary">Generate Report</button>
+                    </div>
+                    <div class="statement-actions">
+                        <button id="printRangeProcurement" class="btn btn-secondary">Print</button>
+                        <button id="exportRangeProcurement" class="btn btn-secondary">Export CSV</button>
+                    </div>
+                    <table id="rangeProcurementTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Purchase Price</th>
+                                <th>Selling Price</th>
+                                <th>Line Total</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div class="statement-totals">
+                        <div class="total-row">
+                            <span>Total Purchase Amount:</span>
+                            <span id="rangeProcurementTotal">0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="settings" class="section">
+                <div class="section-header">
+                    <h1>Settings</h1>
+                    <p>Configure application preferences</p>
+                </div>
+                <div class="settings-container">
+                    <div class="settings-group">
+                        <h3>Shop Information</h3>
+                        <div class="form-group">
+                            <label for="shopName">Shop Name:</label>
+                            <input type="text" id="shopName" value="Sonar Bangla Pharmacy">
+                        </div>
+                        <div class="form-group">
+                            <label for="shopAddress">Address:</label>
+                            <textarea id="shopAddress" rows="3">Idelpur, Sadullahpur, Gaibandha</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="shopPhone">Phone:</label>
+                            <input type="tel" id="shopPhone" value="01707459702">
+                        </div>
+                    </div>
+                    <div class="settings-group">
+                        <h3>System Settings</h3>
+                        <div class="form-group">
+                            <label for="lowStockThreshold">Low Stock Threshold:</label>
+                            <input type="number" id="lowStockThreshold" value="10" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="currency">Currency Symbol:</label>
+                            <input type="text" id="currency" value="৳" maxlength="3">
+                        </div>
+                        <div class="form-group">
+                            <label for="darkModePreference">Dark Mode:</label>
+                            <select id="darkModePreference">
+                                <option value="light">Light Mode</option>
+                                <option value="dark">Dark Mode</option>
+                                <option value="auto">Auto (System)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="settings-actions">
+                        <button id="saveSettings" class="btn btn-primary">Save Settings</button>
+                        <button id="resetData" class="btn btn-danger">Reset All Data</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="newProductModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Product</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="product-form-enhanced">
+                    <div class="form-row-enhanced">
+                        <div class="form-group-enhanced">
+                            <label for="newBarcode" class="enhanced-label">
+                                <i class="fas fa-barcode"></i> Barcode:
+                            </label>
+                            <input type="text" id="newBarcode" class="enhanced-input" placeholder="Enter product barcode" required>
+                        </div>
+                        <div class="form-group-enhanced">
+                            <label for="newProductName" class="enhanced-label">
+                                <i class="fas fa-tag"></i> Product Name:
+                            </label>
+                            <input type="text" id="newProductName" class="enhanced-input" placeholder="Enter product name" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row-enhanced">
+                        <div class="form-group-enhanced">
+                            <label for="newCompanyName" class="enhanced-label">
+                                <i class="fas fa-building"></i> Company Name:
+                            </label>
+                            <input type="text" id="newCompanyName" class="enhanced-input" placeholder="Enter company name" required>
+                        </div>
+                        <div class="form-group-enhanced">
+                            <label for="newQuantity" class="quantity-label">
+                                <i class="fas fa-boxes"></i> Initial Quantity:
+                            </label>
+                            <div class="quantity-controls">
+                                <button type="button" class="qty-btn" id="decreaseNewQty">-</button>
+                                <input type="number" id="newQuantity" class="quantity-input-large" min="0" value="0" required>
+                                <button type="button" class="qty-btn" id="increaseNewQty">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row-enhanced">
+                        <div class="form-group-enhanced">
+                            <label for="newPurchasePrice" class="price-label">
+                                <i class="fas fa-dollar-sign"></i> Purchase Price (Unit):
+                            </label>
+                            <div class="price-input-container">
+                                <span class="currency-symbol"></span>
+                                <input type="number" id="newPurchasePrice" class="price-input-large" step="0.01" min="0" placeholder="0.00" required>
+                            </div>
+                        </div>
+                        <div class="form-group-enhanced">
+                            <label for="newSellingPrice" class="price-label">
+                                <i class="fas fa-chart-line"></i> Selling Price (Unit):
+                            </label>
+                            <div class="price-input-container">
+                                <span class="currency-symbol"></span>
+                                <input type="number" id="newSellingPrice" class="price-input-large" step="0.01" min="0" placeholder="0.00" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="profit-preview" id="profitPreview" style="display: none;">
+                        <div class="profit-info">
+                            <span class="profit-label">Expected Profit per Unit:</span>
+                            <span class="profit-amount" id="expectedProfit">0.00</span>
+                        </div>
+                        <div class="profit-info">
+                            <span class="profit-label">Profit Margin:</span>
+                            <span class="profit-percentage" id="profitMargin">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="saveNewProduct" class="btn btn-primary btn-large">
+                    <i class="fas fa-save"></i> Save Product
+                </button>
+                <button id="cancelNewProduct" class="btn btn-secondary btn-large">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="receiptModal" class="modal">
+        <div class="modal-content receipt-modal">
+            <div class="modal-header">
+                <h3>Sale Receipt</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="receiptContent" class="receipt-content"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="printReceipt" class="btn btn-primary">Print Receipt</button>
+                <button id="closeReceipt" class="btn btn-secondary">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="resetConfirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>⚠️ Reset All Data</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="warning-message">
+                    <p><strong>WARNING:</strong> This action will permanently delete all data including:</p>
+                    <ul>
+                        <li>All products and inventory</li>
+                        <li>Sales history and transactions</li>
+                        <li>Procurement records</li>
+                        <li>All statements and reports</li>
+                    </ul>
+                    <p><strong>This action cannot be undone!</strong></p>
+                </div>
+                <div class="confirmation-input">
+                    <label for="confirmText">Type <strong>CONFIRM</strong> to proceed:</label>
+                    <input type="text" id="confirmText" placeholder="Type CONFIRM here" autocomplete="off">
+                    <div id="confirmError" class="error-message" style="display: none;">
+                        Please type "CONFIRM" exactly as shown above.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="confirmReset" class="btn btn-danger" disabled>Reset All Data</button>
+                <button id="cancelReset" class="btn btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
