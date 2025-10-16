@@ -43,6 +43,8 @@ class ShopManager {
     this.procurements = []
     this.currentSale = []
     this.currentProcurement = []
+    this.currentDiscount = 0
+    // </CHANGE>
     this.settings = {
       shopName: "Sonar Bangla Pharmacy",
       shopAddress: "Idelpur, Sadullahpur, Gaibandha",
@@ -206,6 +208,20 @@ class ShopManager {
     const increaseQtyBtn = document.getElementById("increaseQty")
     const searchMethods = document.querySelectorAll(".search-method")
     const receivedAmountInput = document.getElementById("receivedAmount")
+
+    const applyDiscountBtn = document.getElementById("applyDiscount")
+    const discountAmountInput = document.getElementById("discountAmount")
+
+    applyDiscountBtn.addEventListener("click", () => {
+      this.applyDiscount()
+    })
+
+    discountAmountInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        this.applyDiscount()
+      }
+    })
+    // </CHANGE>
 
     searchMethods.forEach((method) => {
       method.addEventListener("click", () => {
@@ -762,14 +778,48 @@ class ShopManager {
     this.updateChangeCalculation()
   }
 
+  applyDiscount() {
+    const discountInput = document.getElementById("discountAmount")
+    const discountAmount = Number.parseFloat(discountInput.value) || 0
+
+    if (this.currentSale.length === 0) {
+      showToast("Please add items to the sale first", "error")
+      return
+    }
+
+    const grandTotal = this.currentSale.reduce((sum, item) => sum + item.total, 0)
+
+    if (discountAmount < 0) {
+      showToast("Discount amount cannot be negative", "error")
+      return
+    }
+
+    if (discountAmount > grandTotal) {
+      showToast("Discount cannot exceed the total amount", "error")
+      return
+    }
+
+    this.currentDiscount = discountAmount
+
+    document.getElementById("appliedDiscount").textContent = this.formatCurrency(discountAmount)
+    document.getElementById("discountDisplay").style.display = "block"
+
+    this.updateChangeCalculation()
+    showToast("Discount applied successfully", "success")
+  }
+  // </CHANGE>
+
   updateChangeCalculation() {
     const grandTotal = this.currentSale.reduce((sum, item) => sum + item.total, 0)
+    const finalTotal = grandTotal - this.currentDiscount
+    // </CHANGE>
     const receivedAmount = Number.parseFloat(document.getElementById("receivedAmount").value) || 0
 
     if (receivedAmount > 0) {
-      const change = receivedAmount - grandTotal
+      const change = receivedAmount - finalTotal
 
-      document.getElementById("changeTotal").textContent = this.formatCurrency(grandTotal)
+      document.getElementById("changeTotal").textContent = this.formatCurrency(finalTotal)
+      // </CHANGE>
       document.getElementById("changeReceived").textContent = this.formatCurrency(receivedAmount)
       document.getElementById("changeAmount").textContent = this.formatCurrency(change)
       document.getElementById("changeDisplay").style.display = "block"
@@ -781,6 +831,12 @@ class ShopManager {
   removeFromSale(index) {
     this.currentSale.splice(index, 1)
     this.renderSaleItems()
+    if (this.currentSale.length === 0) {
+      this.currentDiscount = 0
+      document.getElementById("discountAmount").value = ""
+      document.getElementById("discountDisplay").style.display = "none"
+    }
+    // </CHANGE>
   }
 
   completeSale() {
@@ -801,24 +857,37 @@ class ShopManager {
       timestamp: new Date().toISOString(),
       items: [...this.currentSale],
       total: this.currentSale.reduce((sum, item) => sum + item.total, 0),
+      discount: this.currentDiscount,
+      finalTotal: this.currentSale.reduce((sum, item) => sum + item.total, 0) - this.currentDiscount,
     }
+    // </CHANGE>
 
     this.sales.push(sale)
     this.saveData()
     this.generateReceipt(sale)
     this.currentSale = []
+    this.currentDiscount = 0
+    // </CHANGE>
     this.renderSaleItems()
     this.updateDashboard()
     document.getElementById("receivedAmount").value = ""
     document.getElementById("changeDisplay").style.display = "none"
+    document.getElementById("discountAmount").value = ""
+    document.getElementById("discountDisplay").style.display = "none"
+    // </CHANGE>
     showToast("Sale completed successfully!", "success")
   }
 
   clearCurrentSale() {
     this.currentSale = []
+    this.currentDiscount = 0
+    // </CHANGE>
     this.renderSaleItems()
     document.getElementById("receivedAmount").value = ""
     document.getElementById("changeDisplay").style.display = "none"
+    document.getElementById("discountAmount").value = ""
+    document.getElementById("discountDisplay").style.display = "none"
+    // </CHANGE>
     showToast("Sale cleared", "info")
   }
 
@@ -835,6 +904,17 @@ class ShopManager {
       `
     })
 
+    let discountHTML = ""
+    if (sale.discount > 0) {
+      discountHTML = `
+        <div class="receipt-item" style="color: var(--success); font-weight: 600;">
+          <span>Discount:</span>
+          <span>-${this.formatCurrency(sale.discount)}</span>
+        </div>
+      `
+    }
+    // </CHANGE>
+
     receiptContent.innerHTML = `
       <div class="receipt-header">
         <h2>${this.settings.shopName}</h2>
@@ -844,9 +924,10 @@ class ShopManager {
       </div>
       <div class="receipt-items">
         ${itemsHTML}
+        ${discountHTML}
       </div>
       <div class="receipt-total">
-        <strong>Total: ${this.formatCurrency(sale.total)}</strong>
+        <strong>Total: ${this.formatCurrency(sale.finalTotal || sale.total)}</strong>
       </div>
       <div class="receipt-footer">
         <p>Thank you for your purchase!</p>
@@ -1123,8 +1204,14 @@ class ShopManager {
 
     let totalSales = 0
     let totalProfit = 0
+    let totalDiscount = 0
+    // </CHANGE>
 
     todaySales.forEach((sale) => {
+      const saleDiscount = sale.discount || 0
+      totalDiscount += saleDiscount
+      // </CHANGE>
+
       sale.items.forEach((item) => {
         const profit = (item.sellingPrice - item.purchasePrice) * item.quantity
         totalSales += item.total
@@ -1139,17 +1226,22 @@ class ShopManager {
           <td>${this.formatCurrency(item.sellingPrice)}</td>
           <td>${this.formatCurrency(profit)}</td>
           <td>${this.formatCurrency(item.total)}</td>
+          <td>${this.formatCurrency(saleDiscount)}</td>
         `
+        // </CHANGE>
       })
     })
 
     if (todaySales.length === 0) {
       const row = tbody.insertRow()
-      row.innerHTML = '<td colspan="7" style="text-align: center;">No sales data for today</td>'
+      row.innerHTML = '<td colspan="8" style="text-align: center;">No sales data for today</td>'
+      // </CHANGE>
     }
 
     document.getElementById("dailySalesTotal").textContent = this.formatCurrency(totalSales)
     document.getElementById("dailyProfitTotal").textContent = this.formatCurrency(totalProfit)
+    document.getElementById("dailyDiscountTotal").textContent = this.formatCurrency(totalDiscount)
+    // </CHANGE>
   }
 
   loadDailyProcurementStatement() {
@@ -1211,8 +1303,14 @@ class ShopManager {
 
     let totalSales = 0
     let totalProfit = 0
+    let totalDiscount = 0
+    // </CHANGE>
 
     rangeSales.forEach((sale) => {
+      const saleDiscount = sale.discount || 0
+      totalDiscount += saleDiscount
+      // </CHANGE>
+
       sale.items.forEach((item) => {
         const profit = (item.sellingPrice - item.purchasePrice) * item.quantity
         totalSales += item.total
@@ -1228,17 +1326,22 @@ class ShopManager {
           <td>${this.formatCurrency(item.sellingPrice)}</td>
           <td>${this.formatCurrency(profit)}</td>
           <td>${this.formatCurrency(item.total)}</td>
+          <td>${this.formatCurrency(saleDiscount)}</td>
         `
+        // </CHANGE>
       })
     })
 
     if (rangeSales.length === 0) {
       const row = tbody.insertRow()
-      row.innerHTML = '<td colspan="8" style="text-align: center;">No sales data for selected range</td>'
+      row.innerHTML = '<td colspan="9" style="text-align: center;">No sales data for selected range</td>'
+      // </CHANGE>
     }
 
     document.getElementById("rangeSalesTotal").textContent = this.formatCurrency(totalSales)
     document.getElementById("rangeProfitTotal").textContent = this.formatCurrency(totalProfit)
+    document.getElementById("rangeDiscountTotal").textContent = this.formatCurrency(totalDiscount)
+    // </CHANGE>
 
     showToast("Sales range report generated", "success")
   }
@@ -1421,10 +1524,16 @@ class ShopManager {
 
     let totalSales = 0
     let totalProfit = 0
+    let totalDiscount = 0
+    // </CHANGE>
 
     const rows = dailySales
-      .flatMap((sale) =>
-        sale.items.map((item) => {
+      .flatMap((sale) => {
+        const saleDiscount = sale.discount || 0
+        totalDiscount += saleDiscount
+        // </CHANGE>
+
+        return sale.items.map((item) => {
           const profit = (item.sellingPrice - item.purchasePrice) * item.quantity
           totalSales += item.total
           totalProfit += profit
@@ -1438,10 +1547,12 @@ class ShopManager {
             <td>${this.formatCurrency(item.sellingPrice)}</td>
             <td>${this.formatCurrency(profit)}</td>
             <td>${this.formatCurrency(item.total)}</td>
+            <td>${this.formatCurrency(saleDiscount)}</td>
           </tr>
         `
-        }),
-      )
+          // </CHANGE>
+        })
+      })
       .join("")
 
     return `
@@ -1455,10 +1566,11 @@ class ShopManager {
             <th>Selling Price</th>
             <th>Profit</th>
             <th>Line Total</th>
+            <th>Discount</th>
           </tr>
         </thead>
         <tbody>
-          ${rows || '<tr><td colspan="7" style="text-align: center;">No sales data available</td></tr>'}
+          ${rows || '<tr><td colspan="8" style="text-align: center;">No sales data available</td></tr>'}
         </tbody>
       </table>
       <div class="totals">
@@ -1470,8 +1582,13 @@ class ShopManager {
           <span>Total Profit:</span>
           <span>${this.formatCurrency(totalProfit)}</span>
         </div>
+        <div class="total-row">
+          <span>Total Discount:</span>
+          <span>${this.formatCurrency(totalDiscount)}</span>
+        </div>
       </div>
     `
+    // </CHANGE>
   }
 
   prepareRangeSalesPrintContent() {
@@ -1492,10 +1609,16 @@ class ShopManager {
 
     let totalSales = 0
     let totalProfit = 0
+    let totalDiscount = 0
+    // </CHANGE>
 
     const rows = rangeSales
-      .flatMap((sale) =>
-        sale.items.map((item) => {
+      .flatMap((sale) => {
+        const saleDiscount = sale.discount || 0
+        totalDiscount += saleDiscount
+        // </CHANGE>
+
+        return sale.items.map((item) => {
           const profit = (item.sellingPrice - item.purchasePrice) * item.quantity
           totalSales += item.total
           totalProfit += profit
@@ -1510,10 +1633,12 @@ class ShopManager {
             <td>${this.formatCurrency(item.sellingPrice)}</td>
             <td>${this.formatCurrency(profit)}</td>
             <td>${this.formatCurrency(item.total)}</td>
+            <td>${this.formatCurrency(saleDiscount)}</td>
           </tr>
         `
-        }),
-      )
+          // </CHANGE>
+        })
+      })
       .join("")
 
     return `
@@ -1528,10 +1653,11 @@ class ShopManager {
             <th>Selling Price</th>
             <th>Profit</th>
             <th>Line Total</th>
+            <th>Discount</th>
           </tr>
         </thead>
         <tbody>
-          ${rows || '<tr><td colspan="8" style="text-align: center;">No sales data available for selected range</td></tr>'}
+          ${rows || '<tr><td colspan="9" style="text-align: center;">No sales data available for selected range</td></tr>'}
         </tbody>
       </table>
       <div class="totals">
@@ -1543,8 +1669,13 @@ class ShopManager {
           <span>Total Profit:</span>
           <span>${this.formatCurrency(totalProfit)}</span>
         </div>
+        <div class="total-row">
+          <span>Total Discount:</span>
+          <span>${this.formatCurrency(totalDiscount)}</span>
+        </div>
       </div>
     `
+    // </CHANGE>
   }
 
   prepareDailyProcurementPrintContent() {
@@ -1649,7 +1780,7 @@ class ShopManager {
           </tr>
         </thead>
         <tbody>
-          ${rows || '<tr><td colspan="7" style="text-align: center;">No procurement data available for selected range</td></tr>'}
+          ${rows || '<tr><td colspan="7" style="text-align: center;">No procurement data for selected range</td></tr>'}
         </tbody>
       </table>
       <div class="totals">
@@ -1705,12 +1836,16 @@ class ShopManager {
     const today = new Date().toDateString()
     const dailySales = this.sales.filter((sale) => new Date(sale.timestamp).toDateString() === today)
 
-    let csv = "Time,Product,Quantity,Purchase Price,Selling Price,Profit,Line Total\n"
+    let csv = "Time,Product,Quantity,Purchase Price,Selling Price,Profit,Line Total,Discount\n"
+    // </CHANGE>
 
     dailySales.forEach((sale) => {
+      const saleDiscount = sale.discount || 0
+      // </CHANGE>
       sale.items.forEach((item) => {
         const profit = (item.sellingPrice - item.purchasePrice) * item.quantity
-        csv += `${new Date(sale.timestamp).toLocaleTimeString()},${item.name},${item.quantity},${item.purchasePrice},${item.sellingPrice},${profit},${item.total}\n`
+        csv += `${new Date(sale.timestamp).toLocaleTimeString()},${item.name},${item.quantity},${item.purchasePrice},${item.sellingPrice},${profit},${item.total},${saleDiscount}\n`
+        // </CHANGE>
       })
     })
 
@@ -1734,12 +1869,16 @@ class ShopManager {
       return saleDate >= fromDate && saleDate <= toDate
     })
 
-    let csv = "Date,Time,Product,Quantity,Purchase Price,Selling Price,Profit,Line Total\n"
+    let csv = "Date,Time,Product,Quantity,Purchase Price,Selling Price,Profit,Line Total,Discount\n"
+    // </CHANGE>
 
     rangeSales.forEach((sale) => {
+      const saleDiscount = sale.discount || 0
+      // </CHANGE>
       sale.items.forEach((item) => {
         const profit = (item.sellingPrice - item.purchasePrice) * item.quantity
-        csv += `${new Date(sale.timestamp).toLocaleDateString()},${new Date(sale.timestamp).toLocaleTimeString()},${item.name},${item.quantity},${item.purchasePrice},${item.sellingPrice},${profit},${item.total}\n`
+        csv += `${new Date(sale.timestamp).toLocaleDateString()},${new Date(sale.timestamp).toLocaleTimeString()},${item.name},${item.quantity},${item.purchasePrice},${item.sellingPrice},${profit},${item.total},${saleDiscount}\n`
+        // </CHANGE>
       })
     })
 

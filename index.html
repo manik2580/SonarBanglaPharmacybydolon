@@ -234,12 +234,33 @@
                             <div class="sale-total-enhanced">
                                 <h3>Final Amount: <span id="saleGrandTotal">0.00</span></h3>
                             </div>
+                            
+                            <!-- Added discount section below Final Amount -->
+                            <div class="discount-section">
+                                <h4>Discount</h4>
+                                <div class="form-group">
+                                    <label for="discountAmount" class="discount-label">Discount Amount (৳):</label>
+                                    <div class="discount-input-container">
+                                        <span class="currency-symbol">৳</span>
+                                        <input type="number" id="discountAmount" class="discount-input" step="0.01" min="0" placeholder="Enter discount amount">
+                                        <button id="applyDiscount" class="btn btn-primary btn-sm">Apply Discount</button>
+                                    </div>
+                                </div>
+                                <div class="discount-display" id="discountDisplay" style="display: none;">
+                                    <div class="discount-row">
+                                        <span>Discount Applied:</span>
+                                        <span id="appliedDiscount">0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- </CHANGE> -->
+                            
                             <div class="received-amount-section">
                                 <h4>Payment Details</h4>
                                 <div class="form-group">
                                     <label for="receivedAmount" class="received-label">Received Amount:</label>
                                     <div class="received-input-container">
-                                        <span class="currency-symbol"></span>
+                                        <span class="currency-symbol">৳</span>
                                         <input type="number" id="receivedAmount" class="received-input" step="0.01" min="0" placeholder="Enter received amount">
                                     </div>
                                 </div>
@@ -427,6 +448,9 @@
                                 <th>Selling Price</th>
                                 <th>Profit</th>
                                 <th>Line Total</th>
+                                <!-- Added Discount column to statements -->
+                                <th>Discount</th>
+                                <!-- </CHANGE> -->
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -440,6 +464,12 @@
                             <span>Total Profit:</span>
                             <span id="dailyProfitTotal">0.00</span>
                         </div>
+                        <!-- Added total discount row -->
+                        <div class="total-row">
+                            <span>Total Discount:</span>
+                            <span id="dailyDiscountTotal">0.00</span>
+                        </div>
+                        <!-- </CHANGE> -->
                     </div>
                 </div>
 
@@ -467,6 +497,9 @@
                                 <th>Selling Price</th>
                                 <th>Profit</th>
                                 <th>Line Total</th>
+                                <!-- Added Discount column to range sales -->
+                                <th>Discount</th>
+                                <!-- </CHANGE> -->
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -480,6 +513,12 @@
                             <span>Total Profit:</span>
                             <span id="rangeProfitTotal">0.00</span>
                         </div>
+                        <!-- Added total discount row for range -->
+                        <div class="total-row">
+                            <span>Total Discount:</span>
+                            <span id="rangeDiscountTotal">0.00</span>
+                        </div>
+                        <!-- </CHANGE> -->
                     </div>
                 </div>
 

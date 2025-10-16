@@ -1289,6 +1289,88 @@ tr:hover {
   font-size: 0.8rem;
 }
 
+.discount-section {
+  margin: 1.5rem 0;
+  padding: 1.5rem;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  border: 2px solid var(--border-primary);
+}
+
+.discount-section h4 {
+  color: var(--text-primary);
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.discount-label {
+  display: block;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.discount-input-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-primary);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.discount-input-container:focus-within {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.discount-input {
+  flex: 1;
+  padding: 0.75rem;
+  padding-left: 2.5rem;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  font-weight: 500;
+  background: transparent;
+  color: var(--text-primary);
+}
+
+.discount-input-container .btn-sm {
+  margin: 0.25rem;
+  white-space: nowrap;
+}
+
+.discount-display {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  border: 1px solid var(--border-primary);
+}
+
+.discount-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  font-weight: 600;
+  color: var(--success);
+}
+
+.discount-row span:first-child {
+  color: var(--text-primary);
+}
+
+.discount-row span:last-child {
+  font-size: 1.1rem;
+  color: var(--success);
+}
+
 @media print {
   body * {
     visibility: hidden;
