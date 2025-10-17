@@ -393,6 +393,7 @@
                     <h1>Inventory Management</h1>
                     <p>Monitor stock levels and product information</p>
                 </div>
+                <!-- Added print button to inventory controls -->
                 <div class="inventory-controls">
                     <input type="text" id="inventorySearch" placeholder="Search products...">
                     <select id="inventoryFilter">
@@ -400,7 +401,11 @@
                         <option value="low-stock">Low Stock</option>
                         <option value="out-of-stock">Out of Stock</option>
                     </select>
+                    <button id="printInventory" class="btn btn-secondary">
+                        <i class="fas fa-print"></i> Print Inventory
+                    </button>
                 </div>
+                <!-- </CHANGE> -->
                 <div class="inventory-table-container">
                     <table id="inventoryTable">
                         <thead>

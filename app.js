@@ -380,6 +380,7 @@ class ShopManager {
   initInventoryEventListeners() {
     const inventorySearch = document.getElementById("inventorySearch")
     const inventoryFilter = document.getElementById("inventoryFilter")
+    const printInventoryBtn = document.getElementById("printInventory")
 
     inventorySearch.addEventListener("input", (e) => {
       this.loadInventory(e.target.value, inventoryFilter.value)
@@ -388,6 +389,11 @@ class ShopManager {
     inventoryFilter.addEventListener("change", (e) => {
       this.loadInventory(inventorySearch.value, e.target.value)
     })
+
+    printInventoryBtn.addEventListener("click", () => {
+      this.printInventory()
+    })
+    // </CHANGE>
   }
 
   initStatementsEventListeners() {
@@ -2139,6 +2145,162 @@ class ShopManager {
       this.hideModal("receiptModal")
     })
   }
+
+  printInventory() {
+    const printContent = this.prepareInventoryPrintContent()
+    const title = `Inventory List - ${new Date().toLocaleDateString()}`
+
+    const printWindow = window.open("", "_blank", "width=900,height=600")
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>${title}</title>
+          <style>
+            body { 
+              font-family: Arial, sans-serif; 
+              margin: 20px; 
+              color: #000;
+              background: #fff;
+            }
+            .header { 
+              text-align: center; 
+              margin-bottom: 30px; 
+              border-bottom: 2px solid #000;
+              padding-bottom: 20px;
+            }
+            .header h1 { 
+              margin: 0 0 10px 0; 
+              font-size: 24px;
+            }
+            .header p { 
+              margin: 5px 0; 
+              font-size: 14px;
+            }
+            table { 
+              width: 100%; 
+              border-collapse: collapse; 
+              margin-bottom: 20px; 
+              font-size: 12px;
+            }
+            th, td { 
+              border: 1px solid #000; 
+              padding: 8px; 
+              text-align: left; 
+            }
+            th { 
+              background-color: #f0f0f0; 
+              font-weight: bold;
+            }
+            .totals { 
+              margin-top: 20px; 
+              font-weight: bold; 
+              font-size: 14px;
+              border-top: 2px solid #000;
+              padding-top: 10px;
+            }
+            .total-row { 
+              display: flex; 
+              justify-content: space-between; 
+              margin-bottom: 5px; 
+            }
+            .footer {
+              margin-top: 30px;
+              text-align: center;
+              font-size: 12px;
+              color: #666;
+            }
+            @media print {
+              body { margin: 0; }
+              @page {
+                size: A4;
+                margin: 10mm;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>${this.settings.shopName}</h1>
+            <p>${this.settings.shopAddress}</p>
+            <p>Phone: ${this.settings.shopPhone}</p>
+            <p><strong>${title}</strong></p>
+            <p>Generated on: ${new Date().toLocaleString()}</p>
+          </div>
+          ${printContent}
+          <div class="footer">
+            <p>This is a computer-generated report from ${this.settings.shopName}</p>
+          </div>
+        </body>
+      </html>
+    `)
+
+    printWindow.document.close()
+
+    printWindow.onload = () => {
+      printWindow.focus()
+      printWindow.print()
+      setTimeout(() => {
+        printWindow.close()
+      }, 3000)
+    }
+  }
+
+  prepareInventoryPrintContent() {
+    let totalValue = 0
+
+    const rows = this.products
+      .map((product) => {
+        const itemTotalValue = product.quantity * product.sellingPrice
+        totalValue += itemTotalValue
+
+        return `
+          <tr>
+            <td>${product.barcode}</td>
+            <td>${product.name}</td>
+            <td>${product.company}</td>
+            <td>${product.quantity}</td>
+            <td>${this.formatCurrency(product.purchasePrice)}</td>
+            <td>${this.formatCurrency(product.sellingPrice)}</td>
+            <td>${this.formatCurrency(itemTotalValue)}</td>
+            <td>${new Date(product.dateUpdated || Date.now()).toLocaleDateString()}</td>
+          </tr>
+        `
+      })
+      .join("")
+
+    return `
+      <table>
+        <thead>
+          <tr>
+            <th>Barcode</th>
+            <th>Item Name</th>
+            <th>Company</th>
+            <th>Quantity</th>
+            <th>Unit Price</th>
+            <th>Selling Price</th>
+            <th>Total Value</th>
+            <th>Date Updated</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows || '<tr><td colspan="8" style="text-align: center;">No inventory data available</td></tr>'}
+        </tbody>
+      </table>
+      <div class="totals">
+        <div class="total-row">
+          <span>Total Inventory Value:</span>
+          <span>${this.formatCurrency(totalValue)}</span>
+        </div>
+        <div class="total-row">
+          <span>Total Items:</span>
+          <span>${this.products.length}</span>
+        </div>
+      </div>
+    `
+  }
+  // </CHANGE>
 }
 
 const shopManager = new ShopManager()
