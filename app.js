@@ -458,12 +458,46 @@ class ShopManager {
   }
 
   initModalEventListeners() {
+    // Modal close handlers
     document.querySelectorAll(".close").forEach((closeBtn) => {
-      closeBtn.addEventListener("click", (e) => {
-        const modal = e.target.closest(".modal")
-        this.hideModal(modal.id)
+      closeBtn.addEventListener("click", function () {
+        this.closest(".modal").style.display = "none"
       })
     })
+
+    const deleteConfirmModal = document.getElementById("deleteConfirmModal")
+    const deleteConfirmText = document.getElementById("deleteConfirmText")
+    const confirmDeleteBtn = document.getElementById("confirmDelete")
+    const cancelDeleteBtn = document.getElementById("cancelDelete")
+    const deleteConfirmError = document.getElementById("deleteConfirmError")
+
+    deleteConfirmText.addEventListener("input", function () {
+      const isValid = this.value === "CONFIRM"
+      confirmDeleteBtn.disabled = !isValid
+      if (isValid) {
+        deleteConfirmError.style.display = "none"
+      }
+    })
+
+    confirmDeleteBtn.addEventListener("click", () => {
+      if (deleteConfirmText.value === "CONFIRM") {
+        shopManager.deleteProduct(shopManager.pendingDeleteBarcode)
+        deleteConfirmModal.style.display = "none"
+      } else {
+        deleteConfirmError.style.display = "block"
+      }
+    })
+
+    cancelDeleteBtn.addEventListener("click", () => {
+      deleteConfirmModal.style.display = "none"
+    })
+
+    window.addEventListener("click", (event) => {
+      if (event.target === deleteConfirmModal) {
+        deleteConfirmModal.style.display = "none"
+      }
+    })
+    // </CHANGE>
 
     document.getElementById("saveNewProduct").addEventListener("click", () => {
       this.saveNewProduct()
@@ -1206,10 +1240,7 @@ class ShopManager {
         <td>${this.formatCurrency(product.sellingPrice)}</td>
         <td><span class="status-badge ${statusClass}">${statusText}</span></td>
         <td>
-          <button class="btn btn-sm btn-secondary" onclick="shopManager.editProduct('${product.barcode}')">
-            <i class="fas fa-edit"></i>
-          </button>
-          <button class="btn btn-sm btn-danger" onclick="shopManager.deleteProduct('${product.barcode}')">
+          <button class="btn btn-sm btn-danger" onclick="shopManager.showDeleteConfirmation('${product.barcode}')">
             <i class="fas fa-trash"></i>
           </button>
         </td>
@@ -1222,17 +1253,26 @@ class ShopManager {
     }
   }
 
-  editProduct(barcode) {
-    showToast("Edit functionality coming soon", "info")
+  showDeleteConfirmation(barcode) {
+    this.pendingDeleteBarcode = barcode
+    const modal = document.getElementById("deleteConfirmModal")
+    const confirmInput = document.getElementById("deleteConfirmText")
+    const confirmBtn = document.getElementById("confirmDelete")
+    const errorMsg = document.getElementById("deleteConfirmError")
+
+    // Reset modal state
+    confirmInput.value = ""
+    confirmBtn.disabled = true
+    errorMsg.style.display = "none"
+
+    modal.style.display = "block"
   }
 
   deleteProduct(barcode) {
-    if (confirm("Are you sure you want to delete this product?")) {
-      this.products = this.products.filter((p) => p.barcode !== barcode)
-      this.saveData()
-      this.loadInventory()
-      showToast("Product deleted successfully", "success")
-    }
+    this.products = this.products.filter((p) => p.barcode !== barcode)
+    this.saveData()
+    this.loadInventory()
+    showToast("Product deleted successfully", "success")
   }
 
   loadStatements() {

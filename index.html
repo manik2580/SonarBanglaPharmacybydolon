@@ -235,7 +235,6 @@
                                 <h3>Final Amount: <span id="saleGrandTotal">0.00</span></h3>
                             </div>
                             
-                            <!-- Added discount section below Final Amount -->
                             <div class="discount-section">
                                 <h4>Discount</h4>
                                 <div class="form-group">
@@ -253,7 +252,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- </CHANGE> -->
                             
                             <div class="received-amount-section">
                                 <h4>Payment Details</h4>
@@ -393,7 +391,6 @@
                     <h1>Inventory Management</h1>
                     <p>Monitor stock levels and product information</p>
                 </div>
-                <!-- Added print button to inventory controls -->
                 <div class="inventory-controls">
                     <input type="text" id="inventorySearch" placeholder="Search products...">
                     <select id="inventoryFilter">
@@ -405,7 +402,6 @@
                         <i class="fas fa-print"></i> Print Inventory
                     </button>
                 </div>
-                <!-- </CHANGE> -->
                 <div class="inventory-table-container">
                     <table id="inventoryTable">
                         <thead>
@@ -453,9 +449,7 @@
                                 <th>Selling Price</th>
                                 <th>Profit</th>
                                 <th>Line Total</th>
-                                <!-- Added Discount column to statements -->
                                 <th>Discount</th>
-                                <!-- </CHANGE> -->
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -469,12 +463,10 @@
                             <span>Total Profit:</span>
                             <span id="dailyProfitTotal">0.00</span>
                         </div>
-                        <!-- Added total discount row -->
                         <div class="total-row">
                             <span>Total Discount:</span>
                             <span id="dailyDiscountTotal">0.00</span>
                         </div>
-                        <!-- </CHANGE> -->
                     </div>
                 </div>
 
@@ -502,9 +494,7 @@
                                 <th>Selling Price</th>
                                 <th>Profit</th>
                                 <th>Line Total</th>
-                                <!-- Added Discount column to range sales -->
                                 <th>Discount</th>
-                                <!-- </CHANGE> -->
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -518,12 +508,10 @@
                             <span>Total Profit:</span>
                             <span id="rangeProfitTotal">0.00</span>
                         </div>
-                        <!-- Added total discount row for range -->
                         <div class="total-row">
                             <span>Total Discount:</span>
                             <span id="rangeDiscountTotal">0.00</span>
                         </div>
-                        <!-- </CHANGE> -->
                     </div>
                 </div>
 
@@ -724,6 +712,33 @@
             </div>
         </div>
     </div>
+
+    <!-- Added deletion confirmation modal -->
+    <div id="deleteConfirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Confirm Deletion</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="warning-message">
+                    <p><strong>WARNING: This action will permanently delete the selected product, including its inventory records and sales history. This action cannot be undone!</strong></p>
+                </div>
+                <div class="confirmation-input">
+                    <label for="deleteConfirmText">Type <strong>CONFIRM</strong> to proceed:</label>
+                    <input type="text" id="deleteConfirmText" placeholder="TYPE CONFIRM HERE" autocomplete="off">
+                    <div id="deleteConfirmError" class="error-message" style="display: none;">
+                        Please type "CONFIRM" exactly as shown above.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="confirmDelete" class="btn btn-danger" disabled>Delete Product</button>
+                <button id="cancelDelete" class="btn btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <!-- </CHANGE> -->
 
     <div id="receiptModal" class="modal">
         <div class="modal-content receipt-modal">
