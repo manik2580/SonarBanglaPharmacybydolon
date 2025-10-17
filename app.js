@@ -1377,7 +1377,7 @@ class ShopManager {
           </div>
           <div class="form-group">
             <label for="adjustSaleQuantityInput" class="quantity-label">Quantity to Remove:</label>
-            <input type="number" id="adjustSaleQuantityInput" class="quantity-input-large" min="1" placeholder="Enter quantity to remove">
+            <input type="number" id="adjustSaleQuantityInput" class="quantity-input-large" min="1" placeholder="">
             <span class="help-text">Enter the number of items to deduct from this sale. The inventory will be automatically restocked.</span>
           </div>
         </div>
