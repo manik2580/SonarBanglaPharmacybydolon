@@ -1293,12 +1293,12 @@ class ShopManager {
     let totalProfit = 0
     let totalDiscount = 0
 
-    todaySales.forEach((sale) => {
+    todaySales.forEach((sale, saleIndex) => {
       const saleDiscount = sale.discount || 0
       totalDiscount += saleDiscount
       const saleGrossTotal = sale.items.reduce((sum, item) => sum + item.total, 0)
 
-      sale.items.forEach((item) => {
+      sale.items.forEach((item, itemIndex) => {
         const itemGrossTotal = item.total
         const itemDiscountPortion = (itemGrossTotal / saleGrossTotal) * saleDiscount
         const itemNetTotal = itemGrossTotal - itemDiscountPortion
@@ -1318,19 +1318,139 @@ class ShopManager {
           <td>${this.formatCurrency(profitAfterDiscount)}</td>
           <td>${this.formatCurrency(itemNetTotal)}</td>
           <td>${this.formatCurrency(itemDiscountPortion)}</td>
+          <td>
+            <button class="btn btn-sm btn-secondary" onclick="shopManager.showAdjustSaleModal(${saleIndex}, ${itemIndex})">
+              <i class="fas fa-edit"></i> Adjust
+            </button>
+          </td>
         `
       })
     })
 
     if (todaySales.length === 0) {
       const row = tbody.insertRow()
-      row.innerHTML = '<td colspan="8" style="text-align: center;">No sales data for today</td>'
+      row.innerHTML = '<td colspan="9" style="text-align: center;">No sales data for today</td>'
     }
 
     document.getElementById("dailySalesTotal").textContent = this.formatCurrency(totalSales)
     document.getElementById("dailyProfitTotal").textContent = this.formatCurrency(totalProfit)
     document.getElementById("dailyDiscountTotal").textContent = this.formatCurrency(totalDiscount)
   }
+  // </CHANGE>
+
+  showAdjustSaleModal(saleIndex, itemIndex) {
+    const sale = this.sales[saleIndex]
+    const item = sale.items[itemIndex]
+
+    const modal = document.getElementById("adjustSaleModal")
+    if (!modal) {
+      this.createAdjustSaleModal()
+    }
+
+    const adjustModal = document.getElementById("adjustSaleModal")
+    document.getElementById("adjustSaleProductName").textContent = item.name
+    document.getElementById("adjustSaleCurrentQty").textContent = item.quantity
+    document.getElementById("adjustSaleQuantityInput").value = ""
+    document.getElementById("adjustSaleQuantityInput").focus()
+
+    // Store references for confirmation
+    adjustModal.dataset.saleIndex = saleIndex
+    adjustModal.dataset.itemIndex = itemIndex
+
+    adjustModal.style.display = "block"
+  }
+
+  createAdjustSaleModal() {
+    const modal = document.createElement("div")
+    modal.id = "adjustSaleModal"
+    modal.className = "modal"
+    modal.innerHTML = `
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Adjust Sale Quantity</h3>
+          <span class="close" onclick="document.getElementById('adjustSaleModal').style.display='none'">&times;</span>
+        </div>
+        <div class="modal-body">
+          <div class="custom-quantity-info">
+            <p><strong>Product:</strong> <span id="adjustSaleProductName"></span></p>
+            <p><strong>Current Quantity:</strong> <span id="adjustSaleCurrentQty"></span></p>
+          </div>
+          <div class="form-group">
+            <label for="adjustSaleQuantityInput" class="quantity-label">Quantity to Remove:</label>
+            <input type="number" id="adjustSaleQuantityInput" class="quantity-input-large" min="1" placeholder="Enter quantity to remove">
+            <span class="help-text">Enter the number of items to deduct from this sale. The inventory will be automatically restocked.</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="confirmAdjustSale" class="btn btn-primary" onclick="shopManager.confirmAdjustSale()">
+            <i class="fas fa-check"></i> Confirm Adjustment
+          </button>
+          <button class="btn btn-secondary" onclick="document.getElementById('adjustSaleModal').style.display='none'">
+            <i class="fas fa-times"></i> Cancel
+          </button>
+        </div>
+      </div>
+    `
+    document.body.appendChild(modal)
+  }
+
+  confirmAdjustSale() {
+    const modal = document.getElementById("adjustSaleModal")
+    const saleIndex = Number.parseInt(modal.dataset.saleIndex)
+    const itemIndex = Number.parseInt(modal.dataset.itemIndex)
+    const quantityToRemove = Number.parseInt(document.getElementById("adjustSaleQuantityInput").value) || 0
+
+    if (quantityToRemove <= 0) {
+      showToast("Please enter a valid quantity", "error")
+      return
+    }
+
+    const sale = this.sales[saleIndex]
+    const item = sale.items[itemIndex]
+
+    if (quantityToRemove > item.quantity) {
+      showToast(`Cannot remove more than ${item.quantity} items`, "error")
+      return
+    }
+
+    // Find the product and restock it
+    const product = this.products.find((p) => p.barcode === item.barcode)
+    if (product) {
+      product.quantity += quantityToRemove
+    }
+
+    // Calculate the amount to deduct from the sale
+    const amountPerItem = item.total / item.quantity
+    const amountToDeduct = amountPerItem * quantityToRemove
+
+    // Update the item quantity and total
+    item.quantity -= quantityToRemove
+    item.total -= amountToDeduct
+
+    // If quantity becomes 0, remove the item from the sale
+    if (item.quantity === 0) {
+      sale.items.splice(itemIndex, 1)
+    }
+
+    // Update sale totals
+    sale.total = sale.items.reduce((sum, i) => sum + i.total, 0)
+    sale.finalTotal = sale.total - (sale.discount || 0)
+
+    // If no items left in sale, remove the entire sale
+    if (sale.items.length === 0) {
+      this.sales.splice(saleIndex, 1)
+    }
+
+    // Save and refresh
+    this.saveData()
+    this.loadDailySalesStatement()
+    this.updateDashboard()
+    this.loadInventory()
+
+    modal.style.display = "none"
+    showToast(`${quantityToRemove} item(s) removed and inventory restocked`, "success")
+  }
+  // </CHANGE>
 
   loadDailyProcurementStatement() {
     const today = new Date()
