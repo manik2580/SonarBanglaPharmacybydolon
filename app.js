@@ -835,7 +835,8 @@ class ShopManager {
       `
     })
 
-    document.getElementById("saleGrandTotal").textContent = this.formatCurrency(grandTotal)
+    const finalAmount = grandTotal - this.currentDiscount
+    document.getElementById("saleGrandTotal").textContent = this.formatCurrency(finalAmount)
     this.updateChangeCalculation()
   }
 
@@ -865,6 +866,7 @@ class ShopManager {
     document.getElementById("appliedDiscount").textContent = this.formatCurrency(discountAmount)
     document.getElementById("discountDisplay").style.display = "block"
 
+    this.renderSaleItems()
     this.updateChangeCalculation()
     showToast("Discount applied successfully", "success")
   }
